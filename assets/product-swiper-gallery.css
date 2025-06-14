@@ -1,0 +1,12 @@
+.product-swiper {
+    width: 100%;
+    margin-top: 20px;
+}
+.swiper-slide {
+    text-align: center;
+}
+.swiper-slide img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
