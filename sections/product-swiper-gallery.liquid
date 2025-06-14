@@ -1,4 +1,97 @@
 <!-- sections/product-swiper-gallery.liquid -->
+
+
+<script>
+  document.getElementById('colorSelect').addEventListener('change', function(e) {
+    const selectedColor = e.target.value;
+
+    document.querySelectorAll('.swiper-slide').forEach(slide => {
+      const slideColor = slide.dataset.color;
+      if (slideColor === selectedColor) {
+        slide.style.display = '';
+      } else {
+        slide.style.display = 'none';
+      }
+    });
+
+    swiper.update(); // оновити Swiper після зміни
+  });
+</script>
+<div class="swiper product-swiper">
+  <div class="swiper-wrapper">
+    {% for media in product.media %}
+      {% assign color = media.alt | downcase %}
+      <div class="swiper-slide" data-color="{{ color }}">
+        {{ media | media_tag }}
+      </div>
+    {% endfor %}
+  </div>
+
+  {% if section.settings.enable_navigation %}
+    <div class="swiper-button-prev"></div>
+    <div class="swiper-button-next"></div>
+  {% endif %}
+
+  {% if section.settings.enable_pagination %}
+    <div class="swiper-pagination"></div>
+  {% endif %}
+  <select id="colorSelect">
+    {% for variant in product.variants %}
+      {% assign color = variant.option1 | downcase %}
+      <option value="{{ color }}">{{ variant.option1 }}</option>
+    {% endfor %}
+  </select>
+</div>
+
+<div
+        id="product-swiper-wrapper"
+        data-mobile="{{ section.settings.slides_per_view_mobile }}"
+        data-tablet="{{ section.settings.slides_per_view_tablet }}"
+        data-desktop="{{ section.settings.slides_per_view_desktop }}"
+        data-space="{{ section.settings.space_between }}"
+        data-pagination="{{ section.settings.enable_pagination }}"
+        data-navigation="{{ section.settings.enable_navigation }}"
+>
+  <div class="swiper product-swiper">
+    <div class="swiper-wrapper">
+      {% for media in product.media %}
+        {% assign color = media.alt | downcase %}
+        <div class="swiper-slide" data-color="{{ color }}">
+          {{ media | media_tag }}
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="swiper-button-prev"></div>
+    <div class="swiper-button-next"></div>
+    <div class="swiper-pagination"></div>
+  </div>
+</div>
+<script>
+  const swiperEl = document.getElementById('product-swiper-wrapper');
+
+  const swiper = new Swiper('.product-swiper', {
+    slidesPerView: parseInt(swiperEl.dataset.mobile),
+    spaceBetween: parseInt(swiperEl.dataset.space),
+    pagination: swiperEl.dataset.pagination === 'true' ? {
+      el: '.swiper-pagination',
+      clickable: true,
+    } : false,
+    navigation: swiperEl.dataset.navigation === 'true' ? {
+      nextEl: '.swiper-button-next',
+      prevEl: '.swiper-button-prev',
+    } : false,
+    breakpoints: {
+      768: {
+        slidesPerView: parseInt(swiperEl.dataset.tablet),
+      },
+      1024: {
+        slidesPerView: parseInt(swiperEl.dataset.desktop),
+      }
+    }
+  });
+</script>
+
 {% schema %}
 {
   "name": "Product Swiper Gallery",
@@ -54,27 +147,3 @@
   ]
 }
 {% endschema %}
-
-<div class="swiper product-swiper">
-    <div class="swiper-wrapper">
-        {% for image in product.images %}
-            <div
-                    class="swiper-slide"
-                    data-color="{{ image.alt | downcase | split: ' ' | first }}">
-                <img
-                        src="{{ image | image_url: width: 600 }}"
-                        alt="{{ image.alt }}"
-                        loading="lazy">
-            </div>
-        {% endfor %}
-    </div>
-
-    {% if section.settings.show_arrows %}
-        <div class="swiper-button-prev"></div>
-        <div class="swiper-button-next"></div>
-    {% endif %}
-
-    {% if section.settings.show_pagination %}
-        <div class="swiper-pagination"></div>
-    {% endif %}
-</div>
